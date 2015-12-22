@@ -42,8 +42,7 @@ def load_instructions(rules_file):
 
 
 def solve(instructions):
-    while len(instructions):
-        next_layer = {}
+    while instructions:
         for instruction in instructions:
             available_inputs = switch_to_state.keys()
             if all(isinstance(operand, int) or operand in available_inputs
@@ -55,7 +54,6 @@ def solve(instructions):
                         operands.append(switch_to_state[operand])
                     else:
                         operands.append(operand)
-                next_layer[instruction['target']] = instruction['function'](*operands)
                 switch_to_state[instruction['target']] = instruction['function'](*operands)
 
 
