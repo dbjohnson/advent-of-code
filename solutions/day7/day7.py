@@ -57,11 +57,11 @@ def solve(instructions):
                 switch_to_state[instruction['target']] = instruction['function'](*operands)
 
 
-instructions = load_instructions('day7.txt')
+instructions = load_instructions('input.txt')
 solve(instructions)
 print 'part 1: ', switch_to_state['a']
 
-instructions = load_instructions('day7.txt')
+instructions = load_instructions('input.txt')
 switch_to_state['b'] = 956   # for part two
 solve(instructions)
 print 'part 2: ', switch_to_state['a']

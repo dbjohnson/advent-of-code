@@ -17,8 +17,8 @@ def ribbon_required(dims):
     return area + perim
 
 
-with open('day2.txt', 'r') as fh:
+with open('input.txt', 'r') as fh:
     print 'part 1', sum([paper_required(l.strip()) for l in fh])
 
-with open('day2.txt', 'r') as fh:
+with open('input.txt', 'r') as fh:
     print 'part 2', sum([ribbon_required(l.strip()) for l in fh])

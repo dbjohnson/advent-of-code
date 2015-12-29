@@ -3,7 +3,7 @@ from Queue import PriorityQueue
 
 city_to_city_dist = defaultdict(lambda: defaultdict(int))
 dists = set()
-with open('day9.txt', 'r') as fh:
+with open('input.txt', 'r') as fh:
     for line in fh:
         cities, dist = line.strip().split(' = ')
         c1, c2 = cities.split(' to ')

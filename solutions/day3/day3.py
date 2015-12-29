@@ -1,4 +1,4 @@
-with open('day3.txt', 'r') as fh:
+with open('input.txt', 'r') as fh:
     route = fh.readline()
 
 m_to_idx = {'^': 0,

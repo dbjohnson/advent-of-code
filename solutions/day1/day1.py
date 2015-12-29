@@ -1,6 +1,6 @@
 import numpy as np
 
-with open('day1.txt', 'r') as fh:
+with open('input.txt', 'r') as fh:
     moves = [1 if m == '(' else -1 for m in fh.readline().strip()]
 
 print 'part 1', sum(moves)

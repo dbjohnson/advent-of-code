@@ -1,6 +1,6 @@
 import json
 
-with open('day12.txt', 'r') as fh:
+with open('input.txt', 'r') as fh:
     doc = json.load(fh)
 
 

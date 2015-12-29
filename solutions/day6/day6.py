@@ -2,7 +2,7 @@ import re
 from collections import defaultdict
 import numpy as np
 
-with open('day6.txt', 'r') as fh:
+with open('input.txt', 'r') as fh:
     instructions = fh.readlines()
 
 

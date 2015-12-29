@@ -3,7 +3,7 @@ from Queue import PriorityQueue
 from collections import defaultdict
 
 seating_costs = defaultdict(lambda: defaultdict(int))
-with open('day13.txt', 'r') as fh:
+with open('input.txt', 'r') as fh:
     for line in fh:
         m = re.match('(?P<p1>\w+) would (?P<sign>gain|lose) (?P<points>[0-9]+) happiness units by sitting next to (?P<p2>\w+).', line.rstrip())
         seating_costs[m.group('p1')][m.group('p2')] = int(m.group('points')) * (1 if m.group('sign') == 'gain' else -1)
@@ -48,7 +48,7 @@ def Astar(start, goal, cost_matrix, strategy='minimize'):
                 if c not in partial_path:
                     new_path = partial_path + [c]
                     total_cost = cost_fn(new_path)
-                    if len(partial_path) < 2 or total_cost < abort_cost:
+                    if total_cost < abort_cost:
                         q.put((total_cost, new_path))
     return best_path
 

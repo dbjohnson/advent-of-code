@@ -1,7 +1,7 @@
 import re
 
 
-with open('day5.txt', 'r') as fh:
+with open('input.txt', 'r') as fh:
     lines = [l.strip() for l in fh.readlines()]
 
 vowels = 'aeiou'
