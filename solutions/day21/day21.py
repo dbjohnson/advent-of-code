@@ -28,13 +28,10 @@ class Fighter(object):
         self.damage = damage
         self.armor = armor
         self.equipment_cost = 0
-        for e in equipment:
-            self.outfit(e)
-
-    def outfit(self, item):
-        self.damage += item['Damage']
-        self.armor += item['Armor']
-        self.equipment_cost += item['Cost']
+        for item in equipment:
+            self.damage += item['Damage']
+            self.armor += item['Armor']
+            self.equipment_cost += item['Cost']
 
     def deal_blow(self, other):
         other.hitpoints -= max(1, self.damage - other.armor)
