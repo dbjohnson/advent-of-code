@@ -27,6 +27,7 @@ class Fighter(object):
         self.hitpoints = hitpoints
         self.damage = damage
         self.armor = armor
+
         self.equipment_cost = 0
         for item in equipment:
             self.damage += item['Damage']
