@@ -17,7 +17,7 @@ What is the sum of all numbers in the document?
 
 Your puzzle answer was `119433`.
 
-##IPart Two
+##Part Two
 
 Uh oh - the Accounting-Elves have realized that they double-counted everything red.
 
