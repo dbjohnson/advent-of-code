@@ -18,13 +18,13 @@ class Computer(object):
         self.registers = {'a': Register(),
                           'b': Register()}
 
-    def process_instructions(self, filename='input.txt'):
+    def process_stack(self, filename='input.txt'):
         with open(filename, 'r') as fh:
-            instructions = [filter(None, re.split('[,\s]', line.strip())) for line in fh]
+            stack = [filter(None, re.split('[,\s]', line.strip())) for line in fh]
 
         position = 0
-        while position >= 0 and position < len(instructions):
-            instruction = instructions[position]
+        while position >= 0 and position < len(stack):
+            instruction = stack[position]
             if instruction[0] == 'jie':
                 if self.registers[instruction[1]].value % 2 == 0:
                     position += int(instruction[2])
@@ -44,10 +44,10 @@ class Computer(object):
 
 
 c = Computer()
-c.process_instructions('input.txt')
+c.process_stack('input.txt')
 print 'part 1:', c.registers['b'].value
 
 c = Computer()
 c.registers['a'].value = 1
-c.process_instructions('input.txt')
+c.process_stack('input.txt')
 print 'part 2:', c.registers['b'].value
