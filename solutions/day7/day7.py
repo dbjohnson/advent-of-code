@@ -1,67 +1,75 @@
 import re
-from collections import defaultdict
-
-switch_to_state = defaultdict(int)
-operator_to_fn = {'AND': lambda a, b: (a & b) & 0xFFFF,
-                  'OR': lambda a, b: (a | b) & 0xFFFF,
-                  'NOT': lambda a: ~a & 0xFFFF,
-                  'LSHIFT': lambda a, b: (a << b) & 0xFFFF,
-                  'RSHIFT': lambda a, b: (a >> b) & 0xFFFF}
 
 
-def load_instructions(rules_file):
-    instructions = []
-    switch_to_state.clear()
-    with open(rules_file, 'r') as fh:
-        for line in fh:
-            instruction, target = line.strip().split(' -> ')
-            if re.match('^[0-9]+$', instruction):
-                switch_to_state[target] = int(instruction)
-            elif re.match('^[a-z]+$', instruction):
-                instructions.append({'function': lambda a: a,
-                                     'operands': [instruction],
-                                     'target': target})
+class Switch(object):
+    operator_to_fn = {'AND': lambda a, b: (a & b) & 0xFFFF,
+                      'OR': lambda a, b: (a | b) & 0xFFFF,
+                      'NOT': lambda a: ~a & 0xFFFF,
+                      'LSHIFT': lambda a, b: (a << b) & 0xFFFF,
+                      'RSHIFT': lambda a, b: (a >> b) & 0xFFFF,
+                      'IDENTITY': lambda a: a & 0xFFFF}
+
+    def __init__(self, name, operator, inputs, circuit):
+        self.name = name
+        self.operator = operator
+        self.value = None
+
+        def make_input_fn(i):
+            if re.match('[0-9]+', i):
+                return lambda: int(i)
             else:
-                for operator, fn in operator_to_fn.items():
-                    if operator in instruction:
-                        if instruction.startswith(operator):
-                            operands = instruction.split('{} '.format(operator))[-1].split()
-                        else:
-                            operands = instruction.split(' {} '.format(operator))
+                return lambda: circuit[i].value
 
-                        def cast(x):
-                            try:
-                                return int(x)
-                            except:
-                                return x
-                        operands = [cast(x) for x in operands]
-                        instructions.append({'function': fn,
-                                             'operands': operands,
-                                             'target': target})
-    return instructions
+        self.inputs = map(make_input_fn, inputs)
+
+    def reset(self):
+        self.value = None
+
+    def set_output(self):
+        input_values = [i() for i in self.inputs]
+        if all([i is not None for i in input_values]):
+            self.value = self.operator_to_fn[self.operator](*input_values)
 
 
-def solve(instructions):
-    while instructions:
-        for instruction in instructions:
-            available_inputs = switch_to_state.keys()
-            if all(isinstance(operand, int) or operand in available_inputs
-                   for operand in instruction['operands']):
-                instructions.remove(instruction)
-                operands = []
-                for operand in instruction['operands']:
-                    if isinstance(operand, str):
-                        operands.append(switch_to_state[operand])
-                    else:
-                        operands.append(operand)
-                switch_to_state[instruction['target']] = instruction['function'](*operands)
+class Circuit(dict):
+    def __init__(self, rules_file='input.txt'):
+        self.load(rules_file)
+
+    def load(self, rules_file='input.txt'):
+        with open(rules_file, 'r') as fh:
+            for line in fh:
+                instruction, target = line.strip().split(' -> ')
+                parts = instruction.split(' ')
+                if len(parts) == 1:
+                    operator = 'IDENTITY'
+                    inputs = parts
+                elif len(parts) == 2:
+                    operator = parts[0]
+                    inputs = [parts[1]]
+                elif len(parts) == 3:
+                    operator = parts[1]
+                    inputs = [parts[0], parts[2]]
+
+                switch = Switch(target, operator, inputs, self)
+                self[target] = switch
+
+    def energize(self):
+        while not all(s.value is not None for s in self.values()):
+            for switch in self.values():
+                if switch.value is None:
+                    switch.set_output()
+
+    def reset(self):
+        for switch in self.values():
+            switch.reset()
 
 
-instructions = load_instructions('input.txt')
-solve(instructions)
-print 'part 1: ', switch_to_state['a']
+circuit = Circuit('input.txt')
+circuit.energize()
+print 'part 1:', circuit['a'].value
 
-instructions = load_instructions('input.txt')
-switch_to_state['b'] = 956   # for part two
-solve(instructions)
-print 'part 2: ', switch_to_state['a']
+tmp = circuit['a'].value
+circuit.reset()
+circuit['b'].value = tmp
+circuit.energize()
+print 'part 2:', circuit['a'].value
