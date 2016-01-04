@@ -51,6 +51,3 @@ c = Computer()
 c.registers['a'].value = 1
 c.process_instructions('input.txt')
 print 'part 2:', c.registers['b'].value
-
-
-
