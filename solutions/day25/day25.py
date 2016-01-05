@@ -1,15 +1,11 @@
-def fibonacci(i):
-    # can't do "classic" recursive fibonacci here - i is too large
-    s = 1
-    for c in xrange(i):
-        s += c + 1
-    return s
+def lazy_caterer(n):
+    return (n ** 2 + n + 2) / 2
 
 
 def row_col_to_idx(row, col):
     row -= 1
     col -= 1
-    return fibonacci(row + col) + col
+    return lazy_caterer(row + col) + col
 
 
 target_row = 2981
