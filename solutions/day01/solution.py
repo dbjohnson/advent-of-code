@@ -4,8 +4,8 @@ with open('input.txt', 'r') as fh:
 print 'part 1', sum(moves)
 
 pos = 0
-for i, move in enumerate(moves):
-    pos += move
+for step, move in enumerate(moves):
     if pos == -1:
-        print 'part 2', i + 1
+        print 'part 2', step
         break
+    pos += move
