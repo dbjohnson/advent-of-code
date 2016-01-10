@@ -1,7 +1,4 @@
-(defn move-to-offset [move]
-  (if (= move \() 1 -1))
-
-(def moves (map move-to-offset (seq (slurp "input.txt"))))
+(def moves (map #(if (= \( %) 1 -1) (seq (slurp "input.txt"))))
 
 (defn part1 [moves]
   (println "part 1:" (reduce + moves)))
