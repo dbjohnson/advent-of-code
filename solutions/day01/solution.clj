@@ -1,17 +1,20 @@
-(def moves (map #(if (= \( %) 1 -1) (seq (slurp "input.txt"))))
+(def moves (->> (slurp "input.txt")
+                (map #(if (= \( %) 1 -1)))) 
 
-(defn part1 [moves]
-  (println "part 1:" (reduce + moves)))
+(defn part1 
+  [moves]
+  (reduce + moves))
 
-(defn part2 [moves]
+(defn part2 
+  [moves]
   (loop [[move & moves] moves
-         pos 0
+         floor 0
          step 0]
-    (if (= -1 pos) 
-       (println "part 2:" step)
-       (recur moves
-              (+ pos move)
-              (inc step))))) 
+    (if (= -1 floor) 
+      step
+      (recur moves
+             (+ floor move)
+             (inc step))))) 
 
-(part1 moves)
-(part2 moves)
+(println "part 1" (part1 moves))
+(println "part 2:" (part2 moves))
