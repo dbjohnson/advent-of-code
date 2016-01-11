@@ -19,7 +19,6 @@ for m in route:
 
 print 'part 1', len(visited)
 
-## part 2
 
 pos1 = [0, 0]
 pos2 = [0, 0]

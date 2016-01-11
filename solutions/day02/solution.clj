@@ -29,13 +29,5 @@
   [dims]
   (+ (volume dims) (shortest-perimeter dims)))
 
-(defn part1 
-  [input]
-  (reduce + (map paper-required input)))
-
-(defn part2 
-  [input]
-  (reduce + (map ribbon-required input)))
-
-(println "part 1:" (part1 input))
-(println "part 2" (part2 input))
+(println "part 1:" (reduce + (map paper-required input)))
+(println "part 2" (reduce + (map ribbon-required input)))

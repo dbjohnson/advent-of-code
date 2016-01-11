@@ -7,10 +7,11 @@ with open('input.txt', 'r') as fh:
 vowels = 'aeiou'
 bad = ['ab', 'cd', 'pq', 'xy']
 
+
 def nice(word):
     vowel_count = sum(word.count(v) for v in vowels) >= 3
     double = re.match('.*(([a-z])\\2{1}).*', word) is not None
-    no_bads = not any([b in word for b in bad])
+    no_bads = not any(b in word for b in bad)
     return all([vowel_count, double, no_bads])
 
 
