@@ -18,12 +18,10 @@ def nice(word):
 print 'part 1', len(filter(nice, lines))
 
 
-def nice_pt2(word):
+def nicer(word):
     repeat_pair = re.match('.*([a-z]{2}).*\\1.*', word) is not None
     repeat_letter = re.match('.*([a-z])[a-z]\\1.*', word) is not None
     return repeat_pair and repeat_letter
 
 
-print 'part 2', len(filter(nice_pt2, lines))
-
-
+print 'part 2', len(filter(nicer, lines))
