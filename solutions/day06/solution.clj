@@ -40,14 +40,14 @@
              (process-instruction instruction lights fnmap))
       lights)))
 
- (defn part1
+(defn part1
   [instructions]
   (let [fnmap {"toggle" #(if (zero? %) 1 0) 
                "turn on" (constantly 1)
                "turn off" (constantly 0)}]
     (reduce + (vals (solve instructions fnmap)))))
 
- (defn part2
+(defn part2
   [instructions]
   (let [fnmap {"toggle" #(+ % 2) 
                "turn on" #(+ % 1)
