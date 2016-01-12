@@ -4,7 +4,6 @@
         y (range ymin ymax)]
     [x y]))
 
-
 (defn parse-instruction
   [instruction]
   (let [pattern #"(toggle|turn off|turn on) ([0-9]+),([0-9]+) through ([0-9]+),([0-9]+)"
