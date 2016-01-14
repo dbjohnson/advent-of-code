@@ -7,7 +7,7 @@
               "NOT" #(bit-not %)
               "SET" #(identity %)})
 
-(defn parse-input
+(defn make-input
   [x]
   (fn [circuit]
     (if (re-find #"^[0-9]+$" x)
@@ -20,10 +20,8 @@
         parts (str/split input #" ")
         commands (set (keys cmd->fn))
         cmd (or (first (filter commands parts)) "SET")
-        func (cmd->fn cmd)
-        operands (map parse-input (remove commands parts))]
-    {:instruction instruction
-     :fn func 
+        operands (map make-input (remove commands parts))]
+    {:fn (cmd->fn cmd)
      :operands operands
      :target target
      :inputs (fn [circuit] (map #(% circuit) operands))}))
