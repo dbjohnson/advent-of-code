@@ -7,7 +7,7 @@
               "NOT" #(bit-not %)
               "SET" #(identity %)})
 
-(defn make-input
+(defn make-wire
   [x]
   (fn [circuit]
     (if (re-find #"^[0-9]+$" x)
@@ -20,10 +20,10 @@
         parts (str/split input #" ")
         commands (set (keys cmd->fn))
         cmd (or (first (filter commands parts)) "SET")
-        operands (map make-input (remove commands parts))]
-    {:fn (cmd->fn cmd)
-     :target target
-     :inputs (fn [circuit] (map #(% circuit) operands))}))
+        operands (map make-wire (remove commands parts))]
+    {:inputs (fn [circuit] (map #(% circuit) operands))
+     :fn (cmd->fn cmd)
+     :target target}))
 
 (def switches (->> (slurp "input.txt")
                    (str/split-lines)
@@ -38,7 +38,7 @@
         (let [inputs ((:inputs switch) circuit)]
           (if (not-any? nil? inputs)
             (recur more (assoc circuit (:target switch) (apply (:fn switch) inputs)))
-            ; inputs for this switch aren't set, so put it at the end of the list and keep going 
+            ; inputs for this switch aren't set, so put it at the end of the list 
             (recur (conj (vec more) switch) circuit)))
         circuit))))
 
