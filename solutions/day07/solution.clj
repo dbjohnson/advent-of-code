@@ -22,7 +22,6 @@
         cmd (or (first (filter commands parts)) "SET")
         operands (map make-input (remove commands parts))]
     {:fn (cmd->fn cmd)
-     :operands operands
      :target target
      :inputs (fn [circuit] (map #(% circuit) operands))}))
 
