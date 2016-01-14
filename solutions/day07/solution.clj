@@ -35,12 +35,11 @@
     (loop [[switch & more] switches
            circuit init-circuit]
       (if switch
-        (if (circuit (:target switch))
-          (recur more circuit)
-          (let [inputs ((:inputs switch) circuit)]
-            (if (every? (complement nil?) inputs)
-              (recur more (assoc circuit (:target switch) (apply (:fn switch) inputs)))
-              (recur (conj (vec more) switch) circuit))))
+        (let [inputs ((:inputs switch) circuit)]
+          (if (not-any? nil? inputs)
+            (recur more (assoc circuit (:target switch) (apply (:fn switch) inputs)))
+            ; inputs for this switch aren't set, so put it at the end of the list and keep going 
+            (recur (conj (vec more) switch) circuit)))
         circuit))))
 
 (defn part1
@@ -49,7 +48,9 @@
 
 (defn part2
   [switches init-circuit]
-  ((switches->circuit switches init-circuit) "a"))
+  (let [set-switches (set (keys init-circuit))
+        switches (filter #(not (set-switches (:target %))) switches)]
+    ((switches->circuit switches init-circuit) "a")))
 
 (println "part 1:" (part1 switches))
 (println "part 2:" (part2 switches {"b" (part1 switches)}))
