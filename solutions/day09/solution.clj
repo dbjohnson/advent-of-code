@@ -42,23 +42,23 @@
   (->> cities 
        (filter (complement (set path))) ; remove any cities that are already on the path
        (map #(conj path %))
-       ; put cost alongside path for easy use with priority-map conj
-       (map #(vector % (path->cost % distance-map cities))) 
-       (reduce concat)))
+       (map #(hash-map % (path->cost % distance-map cities)))
+       (reduce merge)))
 
 (defn A* 
   [distance-map cities]
-  (loop [q (apply pm/priority-map (path->children [] distance-map cities))
-         best-cost nil]
+  (loop [q (merge (pm/priority-map) (path->children [] distance-map cities))
+         best-path nil]
     (if-let [[path cost] (peek q)]
-      (if (and best-cost (< best-cost cost))
+      (if (and best-path (< (:cost best-path) cost))
         ; if the best path available on the q costs more than the best solution we've found so far, we're done 
-        best-cost 
+        best-path
         (let [children (path->children path distance-map cities)
               q (pop q)]
           (if (empty? children)
-            (recur q cost) ; complete path - if we've gotten here, it's also the lowest-cost complete path
-            (recur (apply assoc q children) best-cost)))))))
+            ; complete path - if we've gotten here, it's also the lowest-cost complete path
+            (recur q {:path path :cost cost}) 
+            (recur (merge q children) best-path)))))))
 
 (defn part1
   [distance-map cities]
@@ -67,9 +67,11 @@
 (defn part2
   [distance-map cities]
   ; invert the city-to-city distance map, effectively making A* maximize the cost
-  (let [neg-distances (map #(* -1 %) (vals distance-map))
-        neg-distance-map (zipmap (keys distance-map) neg-distances) ]
-    (* -1 (A* neg-distance-map cities))))
+  (let [inv-distances (map #(/ 1.0 %) (vals distance-map))
+        inv-distance-map (zipmap (keys distance-map) inv-distances)
+        longest-path (A* inv-distance-map cities)
+        true-cost (path->cost (:path longest-path) distance-map cities)]
+    (assoc longest-path :cost true-cost)))
 
 (println "part 1:" (part1 distance-map cities))
 (println "part 2:" (part2 distance-map cities))
