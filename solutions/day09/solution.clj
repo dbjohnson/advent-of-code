@@ -4,17 +4,17 @@
 (require '[clojure.data.priority-map :as pm])
 (require '[clojure.string :as str])
 
-(defn line->city-pair
+(defn str->city-pair
   [string]
   (let [[cities dist] (str/split string #" = ")
-        dist (read-string dist)
-        [c1 c2] (str/split cities #" to ")]
+        [c1 c2] (str/split cities #" to ")
+        dist (read-string dist)]
     {{c1 c2} dist {c2 c1} dist}))
 
 (def distance-map (->> (slurp "input.txt")
                        (str/split-lines)
-                       (map line->city-pair)
-                       (reduce conj)))
+                       (map str->city-pair)
+                       (reduce merge)))
 
 (def cities (->> (keys distance-map)
                  (map seq)
