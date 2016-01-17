@@ -29,8 +29,9 @@
 
 (defn path->heuristic
   [path distance-map cities]
-  (let [min-dist (apply min (vals distance-map))]
-    (* min-dist (- (count cities) (count path)))))
+  (let [min-dist (apply min (vals distance-map))
+        steps-left (- (count cities) (count path))]
+    (* min-dist steps-left)))
 
 (defn path->cost
   [path distance-map cities]
