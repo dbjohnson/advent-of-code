@@ -40,33 +40,36 @@
 (defn path->children
   [path distance-map cities]
   (->> cities 
-       (filter (complement (set path)))
+       (filter (complement (set path))) ; remove any cities that are already on the path
        (map #(conj path %))
-       (map #(vector % (path->cost % distance-map cities)))
+       ; put cost alongside path for easy use with priority-map conj
+       (map #(vector % (path->cost % distance-map cities))) 
        (reduce concat)))
 
-(defn a-star 
+(defn A* 
   [distance-map cities]
   (loop [q (apply pm/priority-map (path->children [] distance-map cities))
          best-cost nil]
     (if-let [[path cost] (peek q)]
       (if (and best-cost (< best-cost cost))
+        ; if the best path available on the q costs more than the best solution we've found so far, we're done 
         best-cost 
         (let [children (path->children path distance-map cities)
               q (pop q)]
           (if (empty? children)
-            (recur q cost)
+            (recur q cost) ; complete path - if we've gotten here, it's also the lowest-cost complete path
             (recur (apply assoc q children) best-cost)))))))
 
 (defn part1
   [distance-map cities]
-  (a-star distance-map cities))
+  (A* distance-map cities))
 
 (defn part2
   [distance-map cities]
+  ; invert the city-to-city distance map, effectively making A* maximize the cost
   (let [neg-distances (map #(* -1 %) (vals distance-map))
         neg-distance-map (zipmap (keys distance-map) neg-distances) ]
-    (* -1 (a-star neg-distance-map cities))))
+    (* -1 (A* neg-distance-map cities))))
 
 (println "part 1:" (part1 distance-map cities))
 (println "part 2:" (part2 distance-map cities))
