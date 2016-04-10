@@ -1,30 +1,63 @@
 (def alphabet "abcdefghijklmnopqrstuvwxyz")
 
 (defn str->idxs
+  "Convert a string to a sequence of integer indices"
+  {:test (fn [] (assert (= [0 1 2] (str->idxs "abc"))))}
   [string]
   (map #(.indexOf alphabet (str %)) string))
   
 (defn idxs->str 
+  "Convert a sequence of integer indices to string"
+  {:test (fn [] (assert (= "abc" (idxs->str [0 1 2]))))}
   [idxs]
   (apply str (map #(nth alphabet %) idxs)))
   
+(defn seq->n-tuples
+  "Transforms a sequence to a sequence of n-tuples where each n-tuple
+  corresponds to the element at the same position in the original sequence
+  followed by the (n-1) subsequent values"
+  {:test (fn [] (assert (= [[0 1 2] [1 2 3] [2 3 4]] 
+                           (seq->n-tuples 3 [0 1 2 3 4]))))}
+  [n s]
+  (->> (iterate next s)
+       (take n)
+       (apply map vector)))
+
+(defn seq->diffs
+  "Calculates the differences between consecutive elements in a sequence"
+  {:test (fn [] (assert (= [1 2 -1] (seq->diffs [1 2 4 3]))))}
+  [s]
+  (->> (seq->n-tuples 2 s) 
+       (map reverse)
+       (map #(apply - %))))
+
 (defn has-straight?
+  "Determines whether a string has a run of characters of length run-length 
+  where each character in the run is one higher than the last"
   [string run-length]
-  (let [idxs (str->idxs string)
-        diffs (map #(apply - %) (map vector (next idxs) idxs))
-        n-tuples (apply map vector (take (dec run-length) (iterate next diffs)))
-        is-run (map (fn [n-tuple] (every? #(= 1 %) n-tuple)) n-tuples)]
-    (some identity is-run)))
+  (->> (str->idxs string)
+       (seq->diffs)
+       (seq->n-tuples (dec run-length))
+       (some #(= (set %) #{1}))))
 
 (defn contains-forbidden?
-  [string & forbidden]
-  (some #(.contains string %) forbidden))
+  "Check string for disallowed characters"
+  [string forbidden]
+  (some #(.contains string (str %)) forbidden))
 
-(defn pair-count
+(defn unique-pair-count
+  "Calculate the number of unique adjacent pairs of identical characters within a string"
   [string]
-  (count (re-seq #"([\w])\1{1}" string)))
+  (->> string
+       (re-seq #"([\w])\1{1}")
+       (map first)
+       set
+       count))
 
 (defn inc-str
+  "Increment string by one character"
+  {:test (fn [] (assert (= (inc-str "aa") "ab"))
+                (assert (= (inc-str "bz") "ca")))}
   [string]
   (let [idxs (str->idxs string)
         idx-limit (dec (count alphabet))]
@@ -38,17 +71,20 @@
             (idxs->str incd)))))))
 
 (defn valid-password?
-  [pwd]
-  (and (not (contains-forbidden? pwd "i" "o" "l"))
-       (< 1 (pair-count pwd))
-       (has-straight? pwd 3)))
+  "Test validity of a candidate password"
+  [pwd n-uniq-pairs straight-len forbidden]
+  (and (not (contains-forbidden? pwd forbidden))
+       (<= n-uniq-pairs (unique-pair-count pwd))
+       (has-straight? pwd straight-len)))
 
 (defn next-password
-  [password]
-  (loop [pwd (inc-str password)]
-    (if (valid-password? pwd)
-      pwd
-      (recur (inc-str pwd)))))
+  "Find the next valid password after the provided value"
+  ([pwd] (next-password pwd 2 3 "iol"))
+  ([pwd n-uniq-pairs straight-len forbidden]
+    (loop [pwd (inc-str pwd)]
+      (if (valid-password? pwd n-uniq-pairs straight-len forbidden)
+        pwd
+        (recur (inc-str pwd))))))
 
 (def nxt (next-password "vzbxkghb"))
 (println "part 1: " nxt)
