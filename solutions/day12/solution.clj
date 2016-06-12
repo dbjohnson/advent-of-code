@@ -1,5 +1,4 @@
 (require '[clojure.data.json :as json])
-(def input (json/read-str (slurp "input.txt")))
 
 (defn seqsum 
   "Returns the sum of all numbers in a sequence"
@@ -14,12 +13,16 @@
     (+ numsum ssum msum)))
 
 (defn mapsum
+  "Returns the sum of all numbers in a map's keys and values"
   [m]
+  {:test (defn f[] (assert (= (6 mapsum {1 2 2 1}))))}
   (+ (seqsum (keys m))
      (seqsum (vals m))))
 
 (defn filter-by-val
+  "Recursively removes any branches in a map whose values contain the specified string" 
   [v m]
+  {:test (defn f[] (assert (= {1 2 3 nil} (filter-by-val {1 2 3 {4 "red"}}))))}
   (cond
     (sequential? m) (map #(filter-by-val v %) m)
     (map? m)
@@ -31,5 +34,6 @@
              m)))
     :else m))
 
+(def input (json/read-str (slurp "input.txt")))
 (println "part 1: " (mapsum input))
 (println "part 2: " (mapsum (filter-by-val "red" input)))
