@@ -20,7 +20,9 @@
      (seqsum (vals m))))
 
 (defn filter-by-val
-  "Recursively removes any branches in a map whose values contain the specified string" 
+  "Recursively filters any json serialized object - which can be any arbitrary 
+   nested combination of lists, maps, and literals - removing any maps that 
+   contain the specified value"
   [v m]
   {:test (defn f[] (assert (= {1 2 3 nil} (filter-by-val {1 2 3 {4 "red"}}))))}
   (cond
