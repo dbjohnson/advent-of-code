@@ -1,41 +1,36 @@
 (require '[clojure.data.json :as json])
 
-(defn seqsum 
-  "Returns the sum of all numbers in a sequence"
-  [s] 
-  {:test (defn f [] (assert (= 6 (seqsum [1 2 "a" 3]))))}
-  (let [numbers (filter number? s)
-        seqs (filter sequential? s)
-        maps (filter map? s)
-        numsum (reduce + numbers)
-        ssum (reduce + (map seqsum seqs))
-        msum (reduce + (map mapsum maps))]
-    (+ numsum ssum msum)))
+(defn json-sum
+  "Returns the sum of all numbers in a json object"
+  {:test (defn f[] (assert (= (10 json-sum [1 2 {3 4}]))))}
+  [j]
+  (cond
+    (map? j)
+      (reduce + (map json-sum [(keys j) (vals j)]))
+    (sequential? j)
+      (reduce + (map json-sum j))
+    :else
+      (if (number? j) j 0)))
 
-(defn mapsum
-  "Returns the sum of all numbers in a map's keys and values"
-  [m]
-  {:test (defn f[] (assert (= (6 mapsum {1 2 2 1}))))}
-  (+ (seqsum (keys m))
-     (seqsum (vals m))))
-
-(defn filter-by-val
+(defn filter-json-by-val
   "Recursively filters any json serialized object - which can be any arbitrary 
    nested combination of lists, maps, and literals - removing any maps that 
    contain the specified value"
-  [v m]
-  {:test (defn f[] (assert (= {1 2 3 nil} (filter-by-val {1 2 3 {4 "red"}}))))}
+  [v j]
+  {:test (defn f[] (assert (= {1 2 3 nil} (filter-json-by-val {1 2 3 {4 "red"}}))))}
   (cond
-    (sequential? m) (map #(filter-by-val v %) m)
-    (map? m)
-      (when (not (some #{v} (vals m)))
+    (map? j)
+      (when (not (some #{v} (vals j)))
         (into {}
            (map
              (fn [[k, vv]]
-               [k, (filter-by-val v vv)])
-             m)))
-    :else m))
+               [k, (filter-json-by-val v vv)])
+             j)))
+    (sequential? j) 
+      (map #(filter-json-by-val v %) j)
+    :else 
+      j))
 
 (def input (json/read-str (slurp "input.txt")))
-(println "part 1: " (mapsum input))
-(println "part 2: " (mapsum (filter-by-val "red" input)))
+(println "part 1: " (json-sum input))
+(println "part 2: " (json-sum (filter-json-by-val "red" input)))
