@@ -1,25 +1,26 @@
 import itertools
-import numpy as np
+import operator
+
+
+def dims_to_sides(dims):
+    return itertools.combinations(dims, 2)
 
 
 def paper_required(dims):
-    dims = map(int, dims.split('x'))
-    sides = [np.prod(s) for s in itertools.combinations(dims, 2)]
-    return sum([2 * s for s in sides]) + min(sides)
+    side_dims = dims_to_sides(dims)
+    side_areas = map(lambda s: reduce(operator.mul, s), side_dims)
+    return sum(side_areas) * 2 + min(side_areas)
 
 
 def ribbon_required(dims):
-    dims = map(int, dims.split('x'))
-    maxdim = max(dims)
-    area = np.prod(dims)
-    dims.remove(maxdim)
-    perim = sum([2 * dim for dim in dims])
-    return area + perim
+    side_dims = dims_to_sides(dims)
+    perimeters = map(lambda s: reduce(operator.add, s), side_dims)
+    volume = reduce(operator.mul, dims)
+    return volume + min(perimeters) * 2
 
 
 with open('input.txt', 'r') as fh:
-    input = fh.read().split()
-
+    input = map(lambda line: map(int, line.split("x")), fh.read().split())
 
 print('part 1: {}'.format(sum(map(paper_required, input))))
 print('part 1: {}'.format(sum(map(ribbon_required, input))))
