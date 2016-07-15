@@ -5,7 +5,7 @@ import numpy as np
 def paper_required(dims):
     dims = map(int, dims.split('x'))
     sides = [np.prod(s) for s in itertools.combinations(dims, 2)]
-    return sum([2*s for s in sides]) + min(sides)
+    return sum([2 * s for s in sides]) + min(sides)
 
 
 def ribbon_required(dims):
@@ -18,7 +18,8 @@ def ribbon_required(dims):
 
 
 with open('input.txt', 'r') as fh:
-    print 'part 1', sum([paper_required(l.strip()) for l in fh])
+    input = fh.read().split()
 
-with open('input.txt', 'r') as fh:
-    print 'part 2', sum([ribbon_required(l.strip()) for l in fh])
+
+print('part 1: {}'.format(sum(map(paper_required, input))))
+print('part 1: {}'.format(sum(map(ribbon_required, input))))
