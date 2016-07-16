@@ -1,4 +1,4 @@
-val input = scala.io.Source.fromFile("input.txt").getLines.map(l => l.split("x").map(v => v.toInt)).toList
+val input = scala.io.Source.fromFile("input.txt").getLines.map(_.split("x").map(_.toInt)).toList
 
 def dimsToSides(dims: Array[Int]) = {
     // A shame - can't use combinations, because it returns the set of unique
@@ -10,7 +10,7 @@ def dimsToSides(dims: Array[Int]) = {
 
 def paperRequired(dims: Array[Int]) = {
     val sides = dimsToSides(dims)
-    val side_areas = sides.map(s => s.product) 
+    val side_areas = sides.map(_.product) 
     val smallest_side = side_areas.min 
     val total_area = side_areas.sum * 2
     total_area + smallest_side 
@@ -19,7 +19,7 @@ def paperRequired(dims: Array[Int]) = {
 def ribbonRequired(dims: Array[Int]) = {
     val volume = dims.product 
     val sides = dimsToSides(dims)
-    val perimeters = sides.map(s => s.sum * 2)
+    val perimeters = sides.map(_.sum * 2)
     volume + perimeters.min
 }
 
