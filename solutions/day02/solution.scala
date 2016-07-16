@@ -1,7 +1,7 @@
 val input = scala.io.Source.fromFile("input.txt").getLines.map(_.split("x").map(_.toInt)).toList
 
 def dimsToSides(dims: Array[Int]) = {
-    // A shame - can't use combinations, because it returns the set of unique
+    // A shame - can't use Array.combinations, because it returns the set of unique
     // combinations, which would potentially discard one or more sides
     // val sides = dims.combinations(2).toList
     val Array(l, w, h) = dims
